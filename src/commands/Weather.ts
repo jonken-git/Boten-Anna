@@ -1,4 +1,5 @@
 import { Command } from "../Command";
+import { EmptyNewLine } from "../helpers/emptyEmbedField";
 import { CommandInteraction, Client, ApplicationCommandType, EmbedBuilder, ApplicationCommandOptionType, CommandInteractionOption, CacheType } from "discord.js";
 import { fetch } from 'cross-fetch';
 import * as dotenv from "dotenv";
@@ -11,7 +12,9 @@ interface embedField {
   value: string,
   inline?: boolean
 }
+
 const getDayName = (date: string): string => new Date(date).toLocaleDateString('en-US', { weekday: 'long'});
+const getUrl = (location: string): string => `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=metric&key=${API_KEY}&contentType=json`;
 
 export const Weather: Command = {
   name: "weather",
@@ -25,7 +28,7 @@ export const Weather: Command = {
     },
     {
       name: 'span',
-      description: 'The number of days to display',
+      description: 'The number of days to display (max 5)',
       required: false,
       type: ApplicationCommandOptionType.Number
     }
@@ -46,7 +49,7 @@ export const Weather: Command = {
 
 const fetchWeather = async (queryLocation: string, span?: Number) => {
   const query: string = queryLocation.replace(' ', '%20');
-  const url: string = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${query}?unitGroup=metric&key=${API_KEY}&contentType=json`;
+  const url: string = getUrl(query);
   const res = await fetch(url);
 
   if (res.status !== 200) {
@@ -56,10 +59,10 @@ const fetchWeather = async (queryLocation: string, span?: Number) => {
   }
 
   const jsonData = await res.json();
-  console.log(jsonData['days'][0]);
   const curr = jsonData['currentConditions'];
-  curr['max'] = jsonData['days'][0]['tempmax'];
-  curr['min'] = jsonData['days'][0]['tempmin'];
+  const dailyData = jsonData['days'];
+  curr['max'] = dailyData[0]['tempmax'];
+  curr['min'] = dailyData[0]['tempmin'];
   const isPreception = Boolean(curr['precipprob']);
   const precipValue = `${ isPreception ? (curr['precipprob'] != null ? curr['precipprop'] + '\n' + curr['precip'] + 'mm': '') : 'None'}`
   const embedFields: embedField[] = [
@@ -73,19 +76,20 @@ const fetchWeather = async (queryLocation: string, span?: Number) => {
   ];
   if (span) {
     const nrOfDays = Number(span);
-    embedFields.push({ name: '\u200b', value: '\u200B' });
-    for (let i = 0; i < nrOfDays; i++) {
+    const upperLimit: number = 5;
+    embedFields.push(EmptyNewLine);
+    for (let i = 1; (i <= nrOfDays) && (i <= upperLimit); i++) {
       const { 
         datetime, 
         temp,
         tempmax, 
         tempmin 
-      } = jsonData['days'][i];
+      } = dailyData[i];
 
       embedFields.push(
         { name: getDayName(datetime), value: `${temp}°C`, inline: true },
         { name: 'Highest :hot_face:', value: `${tempmax}°C`, inline: true },
-        { name: 'Lowest :cold_face:', value: `${tempmin}°C`, inline: true},
+        { name: 'Lowest :cold_face:', value: `${tempmin}°C`, inline: true}
       );
     }
   }
