@@ -98,6 +98,6 @@ const fetchWeather = async (queryLocation: string, span?: Number) => {
   return new EmbedBuilder()
     .setTitle(jsonData['resolvedAddress'])
     .addFields(...embedFields)
-    .setFooter({ text: `Showing result for: ${queryLocation}` })
+    .setFooter({ text: `Showing result for: '${queryLocation}'` })
     .setColor(0xF6BE00);
 }
