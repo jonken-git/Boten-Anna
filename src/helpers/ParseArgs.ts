@@ -1,7 +1,6 @@
 import { CacheType, CommandInteractionOption } from "discord.js";
 
 /**
- * 
  * @param args Array contaning the commands.
  * @returns Map<string, any> containing all the supplied agrument names as keys.
  */
