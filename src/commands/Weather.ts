@@ -1,5 +1,6 @@
 import { Command } from "../Command";
-import { EmptyNewLine } from "../helpers/emptyEmbedField";
+import { EmptyNewLine } from "../helpers/EmptyEmbedField";
+import { parseArgs } from "../helpers/ParseArgs";
 import { CommandInteraction, Client, ApplicationCommandType, EmbedBuilder, ApplicationCommandOptionType, CommandInteractionOption, CacheType } from "discord.js";
 import { fetch } from 'cross-fetch';
 import * as dotenv from "dotenv";
@@ -35,11 +36,11 @@ export const Weather: Command = {
   ],
   type: ApplicationCommandType.ChatInput,
   run: async (_client: Client, interaction: CommandInteraction) => {
-    const args: readonly CommandInteractionOption<CacheType>[] = interaction.options.data;
-    const queryLocation: string = args.find(arg => arg.name === 'location')?.value?.toString()!;
-    const span: number | undefined = Number(args.find(arg => arg.name === 'span')?.value);
-    const embed = await fetchWeather(queryLocation, span);
+    const args: Map<string, any> = parseArgs(interaction.options.data);
+    const location: string = args.get('location');
+    const span: number | undefined = args.get('span');
 
+    const embed = await fetchWeather(location, span);
     await interaction.followUp({
       ephemeral: false,
       embeds: [embed]
@@ -63,8 +64,8 @@ const fetchWeather = async (queryLocation: string, span?: Number) => {
   const dailyData = jsonData['days'];
   curr['max'] = dailyData[0]['tempmax'];
   curr['min'] = dailyData[0]['tempmin'];
-  const isPreception = Boolean(curr['precipprob']);
-  const precipValue = `${ isPreception ? (curr['precipprob'] != null ? curr['precipprop'] + '\n' + curr['precip'] + 'mm': '') : 'None'}`
+  const isPreception: boolean = Boolean(curr['precipprob']);
+  const precipValue: string = `${ isPreception ? (curr['precipprob'] != null ? curr['precipprop'] + '\n' + curr['precip'] + 'mm': '') : 'None'}`
   const embedFields: embedField[] = [
     { name: 'Current conditions', value: curr['conditions'], inline: false },
     { name: 'Temperature :sunglasses:', value: curr['temp'].toString() + '°C', inline: true },
@@ -75,7 +76,7 @@ const fetchWeather = async (queryLocation: string, span?: Number) => {
     { name: 'Sunset :crescent_moon:', value: curr['sunset'], inline: true }
   ];
   if (span) {
-    const nrOfDays = Number(span);
+    const nrOfDays: number = Number(span);
     const upperLimit: number = 5;
     embedFields.push(EmptyNewLine);
     for (let i = 1; (i <= nrOfDays) && (i <= upperLimit); i++) {
