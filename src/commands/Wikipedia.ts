@@ -7,7 +7,7 @@ const DEFAULT_LANG = 'en';
 const DEFUALT_LIMIT = 3;
 const DEFAULT_MAX = 10;
 
-const numberEmojis: Array<string> = [':one:',
+const numberEmojis: string[] = [':one:',
   ':two:',
   ':three:',
   ':four:',
@@ -90,14 +90,14 @@ const fetchArticles = async (query: string, language: string, limit: number): Pr
     return data;
   }
 
-  const articles: Array<Article> = jsonData[1].map((val: string, i: number) => {
+  const articles: Article[] = jsonData[1].map((val: string, i: number) => {
     return {
       title: val,
       url: jsonData[3][i]
     }
   });
 
-  const articleLinks: Array<string> = articles.map((article: Article, i: number) => {
+  const articleLinks: string[] = articles.map((article: Article, i: number) => {
     return `${numberEmojis[i]} [${article.title}](${article.url})`
   });
   const textContent: string = articleLinks.join('\n\n');

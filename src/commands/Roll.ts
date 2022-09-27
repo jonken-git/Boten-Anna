@@ -26,7 +26,7 @@ export const Roll: Command = {
 			const minMaxRe: RegExp = new RegExp(/[0-9]+-[0-9]+/);
 			const maxRe: RegExp = new RegExp(/[0-9]+/);
 			if (minMaxRe.test(span)) {
-				const minAndMax: Array<number> = span.split('-').map(val => parseInt(val.replace(/\D/g, '')));
+				const minAndMax: number[] = span.split('-').map(val => parseInt(val.replace(/\D/g, '')));
 				min = Math.min(...minAndMax);
 				max = Math.max(...minAndMax);
 			} else if(maxRe.test(span)) {
