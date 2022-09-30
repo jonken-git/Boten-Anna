@@ -21,7 +21,7 @@ export const Roll: Command = {
 		let min: number = 1;
 		let max: number = 100;
 
-		if (args !== undefined) {
+		if (args.size) {
 			const span: string = args.get('span')!;
 			const minMaxRe: RegExp = new RegExp(/[0-9]+-[0-9]+/);
 			const maxRe: RegExp = new RegExp(/[0-9]+/);

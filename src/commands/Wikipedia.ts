@@ -100,7 +100,7 @@ const fetchArticles = async (query: string, language: string, limit: number): Pr
   }
 
   const articleLinks: string[] = articles.map((article: Article, i: number) => {
-    return `${numberEmojis[i]} [${article.title}](${article.url})`
+    return `${numberEmojis[i]} [${article.title}](${article.url})`;
   });
   const textContent: string = articleLinks.join('\n\n');
   data.set('count', articles.length);
