@@ -83,19 +83,21 @@ const fetchArticles = async (query: string, language: string, limit: number): Pr
   const jsonData = await res.json();
   const data = new Map<string, string | number>();
 
-  // article names = jsonData[1], article URL = jsonData[3], they are always same size
+  // article names : jsonData[1],
+  // article URL : jsonData[3], they are always same size
   if (jsonData[1].length === 0) {
     data.set('count', jsonData[1].length);
     data.set('content', 'Nothing found...');
     return data;
   }
 
-  const articles: Article[] = jsonData[1].map((val: string, i: number) => {
-    return {
-      title: val,
-      url: jsonData[3][i]
-    }
-  });
+  const articles: Article[] = [];
+  for (let i = 0; i < jsonData[1].length; i++) {
+    articles.push({
+      title: jsonData[1][i],
+      url: jsonData[3][i],
+    });
+  }
 
   const articleLinks: string[] = articles.map((article: Article, i: number) => {
     return `${numberEmojis[i]} [${article.title}](${article.url})`

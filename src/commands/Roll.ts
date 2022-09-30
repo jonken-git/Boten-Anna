@@ -34,7 +34,7 @@ export const Roll: Command = {
 			}
 		}
 		const result: number = Math.round(Math.random() * (max - min)) + min;
-		const username: string = await getNicknameOrUsernameFromInteraction (client, interaction) ?? 'Member';
+		const username: string = await getNicknameOrUsernameFromInteraction(client, interaction);
 
 		let content: string = '';
 		if (result === 42) {
@@ -46,7 +46,7 @@ export const Roll: Command = {
 		} else if (result === 1337) {
 			content = `Kan du dansa? /dance Ja, tydligen.`;
 		} else {
-			content = `${username ?? 'Member'} rolls ${result} (${min}-${max})`
+			content = `${username} rolls ${result} (${min}-${max})`
 		}
 		await interaction.followUp({
 			ephemeral: true,
